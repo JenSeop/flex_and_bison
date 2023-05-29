@@ -13,7 +13,7 @@ int lines = 0;
 
 %%
 
-int main (int argc, chars **argv)
+main (int argc, chars **argv)
 {
 	if(argc > 1)
 	{
