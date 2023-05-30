@@ -3,8 +3,11 @@
 %x COMMENT
 %x IFILE
 
+/* UNIV Character Name */
 UCN   (\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})
+/* Float exponent */
 EXP   ([Ee][-+]?[0-9]+)
+/* Integer length */
 ILEN  ([Uu](L|l|LL|ll)?|(L|l|LL|ll)[Uu]?)
 
 %{
@@ -53,8 +56,10 @@ ILEN  ([Uu](L|l|LL|ll)?|(L|l|LL|ll)[Uu]?)
 <COMMENT>([^*]|\n)+|.
 <COMMENT><<EOF>>      { printf("%s:%d: Unterminated comment\n", curfilename, yylineno); return (0); }
 
+/* C++ comment */
 "//".*\n
 
+/* declaration keywords */
 _Bool |
 _Complex |
 _Imaginary |
@@ -80,6 +85,7 @@ unsigned |
 void |
 volatile { defining = 1; }
 
+/* Keywords */
 break
 case
 continue
@@ -92,11 +98,24 @@ sizeof
 switch
 while
 
+/* Integers */
 0[0-7]*{ILEN}?
 [1-9][0-9]*{ILEN}?
 0[Xx][0-9a-fA-F]+{ILEN}?
 
+/* Demical Float */
 ([0-9]*\.[0-9]+|[0-9]+\.){EXP}?[flFL]?
 [0-9]+{EXP}[flFL]?
 
+/* Hex Float */
 0[Xx]([0-9a-fA-F]*\.[0-9a-fA-F]+|[0-9a-fA-F]+\.?)[Pp][-+]?[0-9]+[flFL]?
+
+/* Char const */
+\'([^'\\]|\\['"?\\abfnrtv]|\\[0-7]{1,3}|\\[Xx][0-9a-fA-F]+|{UCN})+\'
+
+/* String literal */
+L?\"([^\"\\]|\\['"?\\abfnrtv]|\\[0-7]{1,3}|\\[Xx][0-9a-fA-F]+|{UCN})+\"
+
+/* punctuators */
+"{"|"<%"|";"    { defining = 0; }
+
